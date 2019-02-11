@@ -22,8 +22,6 @@ public:
 
     T& operator() (std::array<size_t, 3>);
     const T& operator() (std::array<size_t, 3>) const;
-
-    const T interp(std::array<double, 3>) const;
     
     std::array<size_t, 3> N() const;
     
