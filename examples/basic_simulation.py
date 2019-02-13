@@ -29,5 +29,8 @@ N = [200, 200, 1]
 L = [0.1, 0.05, 0.0]
 origin = [-0.05, 0.005, 0.0]
 
+# calculating Gorkov potential field
+gorkov = sim.Gorkov_potential_field(N, L, origin, pm, pd)
+
 # outputing the Field to a vtr file viewable with Paraview
-us.dump(sim.Gorkov_potential_field(N, L, origin, m, d), "test.vtr")
+us.dump(gorkov, "basic_simulation.vtr")
