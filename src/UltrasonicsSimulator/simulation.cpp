@@ -108,6 +108,25 @@ void Simulation::focus(const Eigen::Vector3d point) {
 
 
 
+void Simulation::focus(const std::array<double, 3> array_point) {
+
+    Eigen::Vector3d point({array_point[0], array_point[1], array_point[2]});
+    
+    for (Transducer& t : transducers) {
+	
+        Eigen::Vector3d d = point - t.pos;
+	double dmag = d.norm();
+
+	t.phi = (1 - std::fmod(dmag / t.wavelength, 1.0)) * 2 * M_PI;
+
+	std::cout << "phi: " << t.phi << "\n";
+	
+    }
+
+}
+
+
+
 Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N, const std::array<double, 3>& L, const std::array<double, 3>& origin, const double particle_mass, const double particle_diameter) const {
 
     Field<double> gorkov(N, L, origin);

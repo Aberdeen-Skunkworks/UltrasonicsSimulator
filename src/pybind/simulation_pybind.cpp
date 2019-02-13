@@ -27,7 +27,7 @@
 	     py::arg("particle mass"),
 	     py::arg("particle diameter"))
 	.def("focus",
-	     &Simulation::focus,
+	     py::overload_cast<const std::array<double, 3> >(&Simulation::focus),
 	     "focusses the transducers on a point in space",
 	     py::arg("point"));
     

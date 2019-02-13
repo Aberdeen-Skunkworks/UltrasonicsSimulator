@@ -51,6 +51,8 @@ public:
     
     void focus(const Eigen::Vector3d);
 
+    void focus(const std::array<double, 3>);
+
     double laplacian_sum(const std::vector<std::array<double, 3> >&, const double, const double, const double, const bool x=true, const bool y=false, const bool z=false) const;
     
     Field<double> Gorkov_potential_field(const std::array<size_t, 3>&, const std::array<double, 3>&, const std::array<double, 3>&, const double, const double) const;
