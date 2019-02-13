@@ -32,7 +32,7 @@ public:
     double L(const size_t) const;
 
     const std::array<double, 3> orig;
-    
+
 };
 
 

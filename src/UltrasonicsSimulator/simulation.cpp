@@ -7,7 +7,7 @@ Simulation::Simulation() {}
 
 
 void Simulation::add_transducer(const Transducer t) {
-
+    std::cout << "hello" << transducers.size() << "\n";
     transducers.push_back(t);
 
 }
@@ -74,8 +74,6 @@ double Simulation::Gorkov_potential(const Particle& p) const {
 
     double avg_psq = (pressure * std::conj(pressure)).real() / 2.0;
     double avg_vsq = vdotconjv.real() / 2.0;
-    
-    std::complex<double> test = v[0]*conjv[0] + v[1]*conjv[1] + v[2]*conjv[2];
 
     double k_0 = 1.0 / (air_density * std::pow(sound_speed_air, 2.0));
     double k_p = 1.0 / (p.density() * std::pow(sound_speed_particle, 2.0));
@@ -85,6 +83,8 @@ double Simulation::Gorkov_potential(const Particle& p) const {
     double rho_tilde = p.density() / air_density;
     double f_2 = 2.0 * (rho_tilde - 1.0) / (2.0 * rho_tilde + 1.0);
 
+    std::cout << p.volume() << ", " << p.mass << ", " << p.diameter << "\n";
+    
     return p.volume() * (f_1 * 0.5 * k_0 * avg_psq - f_2 * 0.75 * air_density * avg_vsq) - p.mass * gravity * p.pos[2];
     
 }
@@ -119,9 +119,11 @@ Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N,
 		double y = origin[1] + L[1] * (j+0.5) / N[1];
 		double z = origin[2] + L[2] * (k+0.5) / N[2];
 
-		Particle p({x, y, z}, particle_mass, particle_diameter);
+		const std::array<double, 3> particle_pos({x, y, z});
+		Particle p(particle_pos, particle_mass, particle_diameter);
 
 		gorkov({i, j, k}) = Gorkov_potential(p);
+		std::cout << x << ", " << y << ", " << z << " -> " << gorkov({i, j, k}) << "\n";
 	    }
 	}
     }
@@ -141,14 +143,17 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 	double x = p[0];
 	double y = p[1];
 	double z = p[2];
-
-	Particle p1({x+width/2, y, z}, particle_mass, particle_diameter);
+	
+	const std::array<double, 3> p1_pos({x+width/2, y, z});
+	Particle p1(p1_pos, particle_mass, particle_diameter);
 	double f1 = Gorkov_potential(p1);
-
-	Particle p2({x, y, z}, particle_mass, particle_diameter);
+	
+	const std::array<double, 3> p2_pos({x, y, z});
+	Particle p2(p2_pos, particle_mass, particle_diameter);
 	double f2 = Gorkov_potential(p2);
-
-	Particle p3({x-width/2, y, z}, particle_mass, particle_diameter);
+	
+	const std::array<double, 3> p3_pos({x-width/2, y, z});
+	Particle p3(p3_pos, particle_mass, particle_diameter);
 	double f3 = Gorkov_potential(p3);
 
 	sum += (f1 - 2*f2 + f3) / std::pow(width, 2);
@@ -161,13 +166,10 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 
 
 
-Field<double> Simulation::optimise_Gorkov_laplacian(const std::array<size_t, 3>& N,
-						    const std::array<double, 3>& L,
-						    const std::array<double, 3>& origin,
-						    const std::vector<std::array<double, 3> >& optimisation_points,
-						    const double laplacian_width,
-						    const double particle_diameter,
-						    const double particle_mass) {
+void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 3> >& optimisation_points,
+					   const double laplacian_width,
+					   const double particle_diameter,
+					   const double particle_mass) {
     
     nlopt::opt opt(nlopt::GN_ESCH, transducers.size());
 
@@ -187,12 +189,12 @@ Field<double> Simulation::optimise_Gorkov_laplacian(const std::array<size_t, 3>&
 
     opt.set_xtol_rel(1e-4);
     std::vector<double> x(transducers.size(), M_PI);
-    double minf;
+    double maxf;
 
     try{
-    	nlopt::result result = opt.optimize(x, minf);
+    	nlopt::result result = opt.optimize(x, maxf);
     	// std::cout << "found minimum of " << std::setprecision(10) << minf << "\n";
-	std::cout << "found minimum of " << minf << "\n";
+	std::cout << "found max of " << maxf << "\n";
 	// std::cout << "phases:" << "\n";
 	// for (size_t i = 0; i < x.size(); i++) {
 	//     std::cout << i << " - " << x[i] << "\n";
@@ -206,8 +208,6 @@ Field<double> Simulation::optimise_Gorkov_laplacian(const std::array<size_t, 3>&
     for (size_t i = 0; i < x.size(); i++) {
 	transducers[i].phi = x[i];
     }
-    
-    return Gorkov_potential_field(N, L, origin, particle_diameter, particle_mass);
     
 }
 

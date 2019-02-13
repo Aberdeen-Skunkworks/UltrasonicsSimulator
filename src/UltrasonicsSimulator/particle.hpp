@@ -11,6 +11,8 @@ class Particle {
 
     Particle(const Eigen::Vector3d, const double, const double);
 
+    Particle(const std::array<double, 3>, const double, const double);
+
     Eigen::Vector3d pos;
 
     double diameter;

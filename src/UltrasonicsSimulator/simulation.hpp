@@ -55,7 +55,7 @@ public:
     
     Field<double> Gorkov_potential_field(const std::array<size_t, 3>&, const std::array<double, 3>&, const std::array<double, 3>&, const double, const double) const;
     
-    Field<double> optimise_Gorkov_laplacian(const std::array<size_t, 3>&, const std::array<double, 3>&, const std::array<double, 3>&, const std::vector<std::array<double, 3> >&, const double, const double, const double);
+    void optimise_Gorkov_laplacian(const std::vector<std::array<double, 3> >&, const double, const double, const double);
 
     double optimise_laplacian_function(const std::vector<double>& , std::vector<double>&, void*);
     
