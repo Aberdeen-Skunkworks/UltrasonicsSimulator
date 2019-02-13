@@ -7,7 +7,7 @@ Simulation::Simulation() {}
 
 
 void Simulation::add_transducer(const Transducer t) {
-    std::cout << "hello" << transducers.size() << "\n";
+
     transducers.push_back(t);
 
 }
@@ -83,7 +83,7 @@ double Simulation::Gorkov_potential(const Particle& p) const {
     double rho_tilde = p.density() / air_density;
     double f_2 = 2.0 * (rho_tilde - 1.0) / (2.0 * rho_tilde + 1.0);
 
-    std::cout << p.volume() << ", " << p.mass << ", " << p.diameter << "\n";
+    // std::cout << p.volume() << ", " << p.mass << ", " << p.diameter << "\n";
     
     return p.volume() * (f_1 * 0.5 * k_0 * avg_psq - f_2 * 0.75 * air_density * avg_vsq) - p.mass * gravity * p.pos[2];
     
@@ -108,7 +108,7 @@ void Simulation::focus(const Eigen::Vector3d point) {
 
 
 
-Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N, const std::array<double, 3>& L, const std::array<double, 3>& origin, const double particle_diameter, const double particle_mass) const {
+Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N, const std::array<double, 3>& L, const std::array<double, 3>& origin, const double particle_mass, const double particle_diameter) const {
 
     Field<double> gorkov(N, L, origin);
 
@@ -123,7 +123,7 @@ Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N,
 		Particle p(particle_pos, particle_mass, particle_diameter);
 
 		gorkov({i, j, k}) = Gorkov_potential(p);
-		std::cout << x << ", " << y << ", " << z << " -> " << gorkov({i, j, k}) << "\n";
+		// std::cout << x << ", " << y << ", " << z << " -> " << gorkov({i, j, k}) << "\n";
 	    }
 	}
     }
@@ -134,7 +134,7 @@ Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N,
 
 
 
-double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& points, const double width, const double particle_diameter, const double particle_mass, const bool x, const bool y, const bool z) const {
+double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& points, const double width, const double particle_mass, const double particle_diameter, const bool x, const bool y, const bool z) const {
 
     double sum = 0;
 
@@ -168,8 +168,8 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 
 void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 3> >& optimisation_points,
 					   const double laplacian_width,
-					   const double particle_diameter,
-					   const double particle_mass) {
+					   const double particle_mass,
+					   const double particle_diameter) {
     
     nlopt::opt opt(nlopt::GN_ESCH, transducers.size());
 
@@ -224,7 +224,7 @@ double Simulation::optimise_laplacian_function(const std::vector<double> &x, std
 	transducers[i].phi = x[i];
     }
 
-    double lap = laplacian_sum(optimisation_points, laplacian_width, particle_diameter, particle_mass);
+    double lap = laplacian_sum(optimisation_points, laplacian_width, particle_mass, particle_diameter);
     
     if (optimisation_counter % 100 == 0) {
 	std::cout << optimisation_counter << ", " << lap << "\n";
@@ -241,5 +241,4 @@ double owrapper(const std::vector<double>& x, std::vector<double>& grad, void* w
     Test* t = reinterpret_cast<Test*>(wrapper_func_data);
     Simulation* sim = t->sim;
     return sim->optimise_laplacian_function(x, grad, t->data);
-    //reinterpret_cast<Simulation*>(o)->optimise_laplacian_function(x, grad, opt_func_data);
 }
