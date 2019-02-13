@@ -3,7 +3,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "../UltrasonicsSimulator/Transducer.hpp"
+#include "../UltrasonicsSimulator/transducer.hpp"
 
 
 namespace vtu {

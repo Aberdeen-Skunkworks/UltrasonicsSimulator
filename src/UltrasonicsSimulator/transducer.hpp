@@ -28,6 +28,8 @@ public:
     
     Transducer(const Eigen::Vector3d pos, const Eigen::Vector3d dir, const double phi=0);
 
+    Transducer(const std::array<double, 3> pos, const std::array<double, 3> dir, const double phi=0);
+
     std::complex<double> pressure(const Eigen::Vector3d point, const double shift=0) const;
     
     Eigen::Vector3cd nablap(const Eigen::Vector3d point, const double shift=0) const;

@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <Eigen/Dense>
 
-#include "../UltrasonicsSimulator/Field.hpp"
+#include "../UltrasonicsSimulator/field.hpp"
 #include "pvd.hpp"
 
 

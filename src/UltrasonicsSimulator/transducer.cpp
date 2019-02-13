@@ -1,9 +1,26 @@
-#include "Transducer.hpp"
+#include "transducer.hpp"
 
 
 
 Transducer::Transducer(const Eigen::Vector3d pos, const Eigen::Vector3d dir, const double phi /* =0 */):
     pos(pos), director(dir), phi(phi)
+{
+    
+    double l = director.norm();
+    if (l == 0) {
+	throw "Cannot use a zero director";
+    }
+
+    director = director / l;
+
+    k = 2 * M_PI / wavelength;
+
+}
+
+
+
+Transducer::Transducer(const std::array<double, 3> pos, const std::array<double, 3> dir, const double phi /* =0 */):
+    pos({pos[0], pos[1], pos[2]}), director({dir[0], dir[1], dir[2]}), phi(phi)
 {
     
     double l = director.norm();
