@@ -27,7 +27,10 @@
 	     py::arg("optimisation points"),
 	     py::arg("laplacian width"),
 	     py::arg("particle mass"),
-	     py::arg("particle diameter"))
+	     py::arg("particle diameter"),
+	     py::arg("dx"),
+	     py::arg("dy"),
+	     py::arg("dz"))
 	.def("focus",
 	     py::overload_cast<const std::array<double, 3> >(&Simulation::focus),
 	     "focusses the transducers on a point in space",

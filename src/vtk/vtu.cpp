@@ -22,6 +22,26 @@ void vtu::dump(const Simulation& sim, const std::string vtu_filename) {
 
 
 
+void vtu::dump(const std::vector<Transducer>& transducers, const std::string vtu_filename) {
+    
+    std::ofstream vtu_file;
+    std::stringstream vtus;
+    vtus << vtu_filename;
+    vtu_file.open(vtus.str());
+  
+    vtu_file << header(transducers.size());
+    vtu_file << point_data(transducers);
+    vtu_file << cell_data();
+    vtu_file << points(transducers);
+    vtu_file << cells();
+    vtu_file << bottom();  
+    
+    vtu_file.close();
+
+}
+
+
+
 std::string vtu::header(const size_t number_of_transducers) {
     std::stringstream vtu_hdr;
     vtu_hdr << "<?xml version=\"1.0\"?>\n";

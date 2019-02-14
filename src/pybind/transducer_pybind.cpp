@@ -11,6 +11,6 @@
 	     py::arg("position"),
 	     py::arg("direction"),
 	     py::arg("phi") = 0)
-	.def_readwrite("phi", &Transducer::phi);
+	.def_readonly("phi", &Transducer::phi);
     
 }

@@ -1,1 +1,5 @@
 *~
+*.vtr
+*.pvd
+*.vtu
+build/

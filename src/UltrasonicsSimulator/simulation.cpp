@@ -153,7 +153,13 @@ Field<double> Simulation::Gorkov_potential_field(const std::array<size_t, 3>& N,
 
 
 
-double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& points, const double width, const double particle_mass, const double particle_diameter, const bool x, const bool y, const bool z) const {
+double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& points,
+				 const double width,
+				 const double particle_mass,
+				 const double particle_diameter,
+				 const bool dx,
+				 const bool dy,
+				 const bool dz) const {
 
     double sum = 0;
 
@@ -188,14 +194,17 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 3> >& optimisation_points,
 					   const double laplacian_width,
 					   const double particle_mass,
-					   const double particle_diameter) {
+					   const double particle_diameter,
+					   const bool dx,
+					   const bool dy,
+					   const bool dz) {
     
     nlopt::opt opt(nlopt::GN_ESCH, transducers.size());
 
     const std::vector<double> lb(transducers.size(), 0);
     const std::vector<double> ub(transducers.size(), 2*M_PI);
 
-    LaplacianOptimisationData data(optimisation_points, laplacian_width, particle_mass, particle_diameter);
+    LaplacianOptimisationData data(optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
     
     Test tdata = {this, &data};
 
@@ -204,7 +213,7 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
     //opt.set_max_objective(optimise_laplacian_function, &data);
     opt.set_max_objective(owrapper, &tdata);
 
-    opt.set_maxtime(1);
+    opt.set_maxtime(20);
 
     opt.set_xtol_rel(1e-4);
     std::vector<double> x(transducers.size(), M_PI);
@@ -238,12 +247,15 @@ double Simulation::optimise_laplacian_function(const std::vector<double> &x, std
     double laplacian_width = d->laplacian_width;
     double particle_mass = d->particle_mass;
     double particle_diameter = d->particle_diameter;
+    bool dx = d->dx;
+    bool dy = d->dy;
+    bool dz = d->dz;
 
     for (size_t i = 0; i < x.size(); i++) {
 	transducers[i].phi = x[i];
     }
 
-    double lap = laplacian_sum(optimisation_points, laplacian_width, particle_mass, particle_diameter);
+    double lap = laplacian_sum(optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
     
     if (optimisation_counter % 100 == 0) {
 	std::cout << optimisation_counter << ", " << lap << "\n";

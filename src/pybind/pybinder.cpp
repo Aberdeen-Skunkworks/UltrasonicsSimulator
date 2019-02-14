@@ -2,8 +2,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 
-
-
 #include "../UltrasonicsSimulator/simulation.hpp"
 #include "../UltrasonicsSimulator/particle.hpp"
 #include "../UltrasonicsSimulator/transducer.hpp"

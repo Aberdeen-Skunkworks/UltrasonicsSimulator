@@ -10,6 +10,8 @@ namespace vtu {
 
     void dump(const Simulation&, const std::string);
 
+    void dump(const std::vector<Transducer>&, const std::string);
+
     std::string header(const size_t);
 
     std::string bottom();

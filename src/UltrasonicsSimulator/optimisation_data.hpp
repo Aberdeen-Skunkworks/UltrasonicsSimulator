@@ -24,6 +24,12 @@ public:
     
     double particle_diameter;    
 
-    LaplacianOptimisationData(const std::vector<std::array<double, 3> >, const double, const double, const double);    
+    bool dx;
+
+    bool dy;
+   
+    bool dz;
+    
+    LaplacianOptimisationData(const std::vector<std::array<double, 3> >, const double, const double, const double, const bool, const bool, const bool);    
     
 };

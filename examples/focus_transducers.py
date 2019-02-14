@@ -30,7 +30,7 @@ for i in range(tx):
 focus_point = [origin[0] + L[0] / 2, origin[1] + L[1] / 2, origin[2] + L[2] / 2]
 print("focus point:", focus_point)
 sim.focus(focus_point)
-    
+
 # defining particle mass and diameter
 pm = 7.176591426e-7
 pd = 0.0042

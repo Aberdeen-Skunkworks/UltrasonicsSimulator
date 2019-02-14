@@ -54,11 +54,11 @@ public:
 
     void focus(const std::array<double, 3>);
 
-    double laplacian_sum(const std::vector<std::array<double, 3> >&, const double, const double, const double, const bool x=true, const bool y=false, const bool z=false) const;
+    double laplacian_sum(const std::vector<std::array<double, 3> >&, const double, const double, const double, const bool x, const bool y, const bool z) const;
     
     Field<double> Gorkov_potential_field(const std::array<size_t, 3>&, const std::array<double, 3>&, const std::array<double, 3>&, const double, const double) const;
     
-    void optimise_Gorkov_laplacian(const std::vector<std::array<double, 3> >&, const double, const double, const double);
+    void optimise_Gorkov_laplacian(const std::vector<std::array<double, 3> >&, const double, const double, const double, const bool x, const bool y, const bool z);
 
     double optimise_laplacian_function(const std::vector<double>& , std::vector<double>&, void*);
     
