@@ -3,14 +3,14 @@
 #include <sstream>
 #include <fstream>
 
-#include "../UltrasonicsSimulator/transducer.hpp"
+#include "../UltrasonicsSimulator/simulation.hpp"
 
 
 namespace vtu {
 
-    void dump(const std::vector<Transducer>&, const std::string);
+    void dump(const Simulation&, const std::string);
 
-    std::string header(const std::array<size_t, 3>);
+    std::string header(const size_t);
 
     std::string bottom();
 

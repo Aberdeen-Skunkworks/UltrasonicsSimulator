@@ -19,8 +19,9 @@ typedef struct {
 
 class Simulation {
 
-    const double gravity = -9.81;
-
+    // const double gravity = -9.81;
+    Eigen::Vector3d gravity;
+    
     const double frequency = 40000;
 
     const double sound_speed_air = 346; // m/s

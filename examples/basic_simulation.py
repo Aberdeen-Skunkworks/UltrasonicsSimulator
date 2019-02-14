@@ -1,6 +1,8 @@
+# including build directory
 import sys
 sys.path.insert(0, '../build/')
 
+# importing module
 import ultrasonics as us
 
 # creating a ultrasonics simulation

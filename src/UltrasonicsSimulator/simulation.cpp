@@ -2,7 +2,9 @@
 
 
 
-Simulation::Simulation() {}
+Simulation::Simulation() {
+    gravity << 0, -9.81, 0;
+}
 
 
 
@@ -85,7 +87,7 @@ double Simulation::Gorkov_potential(const Particle& p) const {
 
     // std::cout << p.volume() << ", " << p.mass << ", " << p.diameter << "\n";
     
-    return p.volume() * (f_1 * 0.5 * k_0 * avg_psq - f_2 * 0.75 * air_density * avg_vsq) - p.mass * gravity * p.pos[2];
+    return p.volume() * (f_1 * 0.5 * k_0 * avg_psq - f_2 * 0.75 * air_density * avg_vsq) - p.mass * gravity.dot(p.pos);
     
 }
 
@@ -99,8 +101,6 @@ void Simulation::focus(const Eigen::Vector3d point) {
 	double dmag = d.norm();
 
 	t.phi = (1 - std::fmod(dmag / t.wavelength, 1.0)) * 2 * M_PI;
-
-	std::cout << "phi: " << t.phi << "\n";
 	
     }
 
@@ -119,7 +119,7 @@ void Simulation::focus(const std::array<double, 3> array_point) {
 
 	t.phi = (1 - std::fmod(dmag / t.wavelength, 1.0)) * 2 * M_PI;
 
-	std::cout << "phi: " << t.phi << "\n";
+	// std::cout << "phi: " << t.phi << "\n";
 	
     }
 

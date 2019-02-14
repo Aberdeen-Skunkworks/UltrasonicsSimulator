@@ -9,6 +9,7 @@
 #include "../UltrasonicsSimulator/transducer.hpp"
 #include "../UltrasonicsSimulator/field.hpp"
 #include "../vtk/vtr.hpp"
+#include "../vtk/vtu.hpp"
 
 namespace py = pybind11;
 
