@@ -1,4 +1,6 @@
 
+
+
 {
     
     // Transducer class
@@ -8,6 +10,7 @@
 	     const double>(),
 	     py::arg("position"),
 	     py::arg("direction"),
-	     py::arg("phi") = 0);
+	     py::arg("phi") = 0)
+	.def_readwrite("phi", &Transducer::phi);
     
 }

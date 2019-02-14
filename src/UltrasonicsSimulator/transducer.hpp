@@ -10,6 +10,7 @@
 class Transducer {
 
     double PktoPkA(const double) const;
+    
 public:
 
     Eigen::Vector3d pos;

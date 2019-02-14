@@ -1,4 +1,6 @@
 
+
+
 {
     
     // Simulation class
@@ -29,6 +31,9 @@
 	.def("focus",
 	     py::overload_cast<const std::array<double, 3> >(&Simulation::focus),
 	     "focusses the transducers on a point in space",
-	     py::arg("point"));
+	     py::arg("point"))
+	.def("transducer", [](Simulation& sim, const size_t index) {
+		return sim.transducers[index];
+	    });
     
 }
