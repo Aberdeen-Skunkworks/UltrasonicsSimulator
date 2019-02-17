@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <complex>
 
-#include <stator/symbolic/symbolic.hpp>
+// #include <stator/symbolic/symbolic.hpp>
 
 
 

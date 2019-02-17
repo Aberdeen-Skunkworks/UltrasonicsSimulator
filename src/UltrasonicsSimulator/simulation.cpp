@@ -169,7 +169,7 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 	double y = p[1];
 	double z = p[2];
 	
-	const std::array<double, 3> p1_pos({x+width/2, y, z});
+	const std::array<double, 3> p1_pos({x-width/2, y, z});
 	Particle p1(p1_pos, particle_mass, particle_diameter);
 	double f1 = Gorkov_potential(p1);
 	
@@ -177,13 +177,17 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 	Particle p2(p2_pos, particle_mass, particle_diameter);
 	double f2 = Gorkov_potential(p2);
 	
-	const std::array<double, 3> p3_pos({x-width/2, y, z});
+	const std::array<double, 3> p3_pos({x+width/2, y, z});
 	Particle p3(p3_pos, particle_mass, particle_diameter);
 	double f3 = Gorkov_potential(p3);
 
+	// std::cout << "1 " << f1 << "\t2 " << f2 << "\t3 " << f3 << "\n";
+	
 	sum += (f1 - 2*f2 + f3) / std::pow(width, 2);
 	
     }
+
+    // std::cout << "sum " << sum << "\n";
     
     return sum;
 
@@ -197,7 +201,9 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 					   const double particle_diameter,
 					   const bool dx,
 					   const bool dy,
-					   const bool dz) {
+					   const bool dz,
+					   const double max_optimisation_time,
+					   const double xtol) {
     
     nlopt::opt opt(nlopt::GN_ESCH, transducers.size());
 
@@ -213,10 +219,17 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
     //opt.set_max_objective(optimise_laplacian_function, &data);
     opt.set_max_objective(owrapper, &tdata);
 
-    opt.set_maxtime(20);
+    opt.set_maxtime(max_optimisation_time);
 
-    opt.set_xtol_rel(1e-4);
-    std::vector<double> x(transducers.size(), M_PI);
+    // opt.set_xtol_rel(1e-4);
+    opt.set_xtol_rel(xtol);
+    
+    // std::vector<double> x(transducers.size(), M_PI);
+    std::vector<double> x;
+    for (Transducer& t : transducers) {
+	x.push_back(t.phi);
+    }
+	
     double maxf;
 
     try{
