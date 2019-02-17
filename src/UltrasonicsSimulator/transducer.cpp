@@ -3,36 +3,22 @@
 
 
 Transducer::Transducer(const Eigen::Vector3d pos, const Eigen::Vector3d dir, const double phi /* =0 */):
-    pos(pos), director(dir), phi(phi)
+    pos(pos), director(dir / dir.norm()), phi(phi), k(2 * M_PI / wavelength)
 {
     
     double l = director.norm();
     if (l == 0) {
+	std::cout << "Cannot use a zero director" << std::endl;
 	throw "Cannot use a zero director";
     }
-
-    director = director / l;
-
-    k = 2 * M_PI / wavelength;
 
 }
 
 
 
 Transducer::Transducer(const std::array<double, 3> pos, const std::array<double, 3> dir, const double phi /* =0 */):
-    pos({pos[0], pos[1], pos[2]}), director({dir[0], dir[1], dir[2]}), phi(phi)
-{
-    
-    double l = director.norm();
-    if (l == 0) {
-	throw "Cannot use a zero director";
-    }
-
-    director = director / l;
-
-    k = 2 * M_PI / wavelength;
-
-}
+    Transducer(Eigen::Vector3d({pos[0], pos[1], pos[2]}), Eigen::Vector3d({dir[0], dir[1], dir[2]}), phi)
+{}
 
 
 
@@ -55,9 +41,9 @@ std::complex<double> Transducer::pressure(const Eigen::Vector3d point, const dou
 	return 0+0j;
     }
     
-    std::complex<double> exponential = std::exp((std::complex<double>)(1j * (phi + k * mag_rs + shift))) / mag_rs;
+    const std::complex<double> exponential = std::exp((std::complex<double>)(1j * (phi + k * mag_rs + shift))) / mag_rs;
 
-    double x = k * piston_radius * std::sin(theta);
+    const double x = k * piston_radius * std::sin(theta);
 
     double frac;
     if (x < 1e-6) {
@@ -89,20 +75,20 @@ Eigen::Vector3cd Transducer::nablap(const Eigen::Vector3d point, const double sh
 
     const Eigen::Vector3d rs_hat = rs / mag_rs;
 
-    std::complex<double> exponent_term = std::exp((std::complex<double>)1j * (phi + k * mag_rs + shift)) / mag_rs;
+    const std::complex<double> exponent_term = std::exp((std::complex<double>)1j * (phi + k * mag_rs + shift)) / mag_rs;
 
     const Eigen::Vector3cd d_exponential_term_dr = rs_hat * (std::complex<double>)1j * k * std::exp((std::complex<double>)1j * (phi + k * mag_rs + shift)) / mag_rs - std::exp((std::complex<double>)1j * (phi + k * mag_rs + shift)) * rs_hat / std::pow(mag_rs, 2);
     if (theta < 1e-4) {
-    	double fraction_term = PktoPkA(p0);
+    	const double fraction_term = PktoPkA(p0);
     	return fraction_term * d_exponential_term_dr;
     }
     else {
-    	double fraction_term = PktoPkA(p0 * std::sin(k * piston_radius * std::sin(theta)) / (k * piston_radius * std::sin(theta)));
-    	double numerator = PktoPkA(p0 * std::sin(k * piston_radius * std::sin(theta)));
-    	double denominator = k * piston_radius * std::sin(theta);
-        Eigen::Vector3cd d_denominator_dr = k * piston_radius * (-rs_hat.dot(director)) / std::sqrt(1 - rs_hat.dot(director)) * (director - rs_hat * director.dot(rs_hat)) / mag_rs;
-    	Eigen::Vector3cd d_numerator_dr = PktoPkA(p0) * std::cos(k * piston_radius * std::sin(theta)) * d_denominator_dr;
-    	Eigen::Vector3cd d_fraction_dr = (d_numerator_dr * denominator - numerator * d_denominator_dr) / std::pow(denominator, 2);
+    	const double fraction_term = PktoPkA(p0 * std::sin(k * piston_radius * std::sin(theta)) / (k * piston_radius * std::sin(theta)));
+    	const double numerator = PktoPkA(p0 * std::sin(k * piston_radius * std::sin(theta)));
+    	const double denominator = k * piston_radius * std::sin(theta);
+        const Eigen::Vector3cd d_denominator_dr = k * piston_radius * (-rs_hat.dot(director)) / std::sqrt(1 - rs_hat.dot(director)) * (director - rs_hat * director.dot(rs_hat)) / mag_rs;
+    	const Eigen::Vector3cd d_numerator_dr = PktoPkA(p0) * std::cos(k * piston_radius * std::sin(theta)) * d_denominator_dr;
+    	const Eigen::Vector3cd d_fraction_dr = (d_numerator_dr * denominator - numerator * d_denominator_dr) / std::pow(denominator, 2);
     	return d_fraction_dr * exponent_term + fraction_term * d_exponential_term_dr;
     }
 }

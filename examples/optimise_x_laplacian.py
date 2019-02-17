@@ -41,7 +41,7 @@ print("optimisation point:", opt_point)
 # optimising
 print("Optimising transducer phases")
 # sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 1e-0)
-sim.optimise_Gorkov_laplacian([opt_point], 2e-8, pm, pd, True, False, False, 200, 10)
+#sim.optimise_Gorkov_laplacian([opt_point], 2e-8, pm, pd, True, False, False, 200, 10)
 
 # print("phi:", sim.transducer(0).phi)
 us.dump(sim, "optimised_phi_x_laplacian.vtu")

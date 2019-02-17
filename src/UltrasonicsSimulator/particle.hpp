@@ -5,22 +5,29 @@
 
 
 class Particle {
-
+    
  public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+    
     Particle(const Eigen::Vector3d, const double, const double);
 
+    
     Particle(const std::array<double, 3>, const double, const double);
 
-    Eigen::Vector3d pos;
 
-    double diameter;
+    const Eigen::Vector3d pos;
 
-    double mass;
     
-    double volume() const;
+    const double diameter;
 
-    double density() const;
+    
+    const double mass;
+
+    
+    const double volume() const;
+
+    
+    const double density() const;
     
 };

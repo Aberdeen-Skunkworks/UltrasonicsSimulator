@@ -14,7 +14,7 @@ Particle::Particle(const std::array<double, 3> pos, const double m, const double
 
 
 
-double Particle::volume() const {
+const double Particle::volume() const {
 
     return M_PI * std::pow(diameter, 3) / 6;
     
@@ -22,7 +22,7 @@ double Particle::volume() const {
 
 
 
-double Particle::density() const {
+const double Particle::density() const {
 
     return mass / volume();
     

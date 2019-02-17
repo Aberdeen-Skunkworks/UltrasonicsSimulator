@@ -8,7 +8,15 @@
 	.def(py::init<>())
 	.def("add_transducer",
 	     &Simulation::add_transducer,
-	     "adds a transducer to the simulation")
+	     "adds a transducer to the simulation",
+	     py::arg("transducer"))
+	.def("add_transducers",
+	     &Simulation::add_transducers,
+	     "adds a list of transducers to the simulation",
+	     py::arg("transducers"))
+	.def("clear",
+	     &Simulation::clear,
+	     "removes current transducers from the simulation")
 	.def("Gorkov_potential_field",
 	     &Simulation::Gorkov_potential_field,
 	     "returns the Gorkov potential field",

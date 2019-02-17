@@ -2,9 +2,9 @@
 
 
 
-Simulation::Simulation() {
-    gravity << 0, -9.81, 0;
-}
+Simulation::Simulation():
+    gravity({0, -9.81, 0})
+{}
 
 
 
@@ -66,24 +66,24 @@ Eigen::Vector3cd Simulation::nablap_sum(const Eigen::Vector3d point, const doubl
 
 double Simulation::Gorkov_potential(const Particle& p) const {
 
-    std::complex<double> pressure = pressure_sum(p.pos);
-    Eigen::Vector3cd nablap = nablap_sum(p.pos);
+    const std::complex<double> pressure = pressure_sum(p.pos);
+    const Eigen::Vector3cd nablap = nablap_sum(p.pos);
     
-    double omega = 2.0 * M_PI * frequency;
-    Eigen::Vector3cd v = nablap / (1j * air_density * omega);
-    Eigen::Vector3cd conjv = v.conjugate();
-    std::complex<double> vdotconjv = v[0]*conjv[0] + v[1]*conjv[1] + v[2]*conjv[2];    
+    const double omega = 2.0 * M_PI * frequency;
+    const Eigen::Vector3cd v = nablap / (1j * air_density * omega);
+    const Eigen::Vector3cd conjv = v.conjugate();
+    const std::complex<double> vdotconjv = v[0]*conjv[0] + v[1]*conjv[1] + v[2]*conjv[2];    
 
-    double avg_psq = (pressure * std::conj(pressure)).real() / 2.0;
-    double avg_vsq = vdotconjv.real() / 2.0;
+    const double avg_psq = (pressure * std::conj(pressure)).real() / 2.0;
+    const double avg_vsq = vdotconjv.real() / 2.0;
 
-    double k_0 = 1.0 / (air_density * std::pow(sound_speed_air, 2.0));
-    double k_p = 1.0 / (p.density() * std::pow(sound_speed_particle, 2.0));
-    double k_tilde = k_p / k_0;
-    double f_1 = 1.0 - k_tilde;
+    const double k_0 = 1.0 / (air_density * std::pow(sound_speed_air, 2.0));
+    const double k_p = 1.0 / (p.density() * std::pow(sound_speed_particle, 2.0));
+    const double k_tilde = k_p / k_0;
+    const double f_1 = 1.0 - k_tilde;
 
-    double rho_tilde = p.density() / air_density;
-    double f_2 = 2.0 * (rho_tilde - 1.0) / (2.0 * rho_tilde + 1.0);
+    const double rho_tilde = p.density() / air_density;
+    const double f_2 = 2.0 * (rho_tilde - 1.0) / (2.0 * rho_tilde + 1.0);
 
     // std::cout << p.volume() << ", " << p.mass << ", " << p.diameter << "\n";
     
@@ -212,19 +212,16 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 
     LaplacianOptimisationData data(optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
     
-    Test tdata = {this, &data};
+    LaplacianSimCombo tdata = {this, &data};
 
     opt.set_lower_bounds(lb);
     opt.set_upper_bounds(ub);
-    //opt.set_max_objective(optimise_laplacian_function, &data);
-    opt.set_max_objective(owrapper, &tdata);
+    opt.set_max_objective(optimise_laplacian_function_wrapper, &tdata);
 
     opt.set_maxtime(max_optimisation_time);
 
-    // opt.set_xtol_rel(1e-4);
     opt.set_xtol_rel(xtol);
     
-    // std::vector<double> x(transducers.size(), M_PI);
     std::vector<double> x;
     for (Transducer& t : transducers) {
 	x.push_back(t.phi);
@@ -281,8 +278,12 @@ double Simulation::optimise_laplacian_function(const std::vector<double> &x, std
 
 
 
-double owrapper(const std::vector<double>& x, std::vector<double>& grad, void* wrapper_func_data) {
-    Test* t = reinterpret_cast<Test*>(wrapper_func_data);
-    Simulation* sim = t->sim;
-    return sim->optimise_laplacian_function(x, grad, t->data);
+double optimise_laplacian_function_wrapper(const std::vector<double>& x, std::vector<double>& grad, void* wrapper_func_data) {
+    
+    LaplacianSimCombo* c = reinterpret_cast<LaplacianSimCombo*>(wrapper_func_data);
+    
+    Simulation* sim = c->sim;
+    
+    return sim->optimise_laplacian_function(x, grad, c->data);
+    
 }

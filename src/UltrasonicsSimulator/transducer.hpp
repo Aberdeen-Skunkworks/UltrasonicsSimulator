@@ -8,33 +8,45 @@
 
 
 class Transducer {
-
+    
     double PktoPkA(const double) const;
+
     
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    Eigen::Vector3d pos;
     
-    Eigen::Vector3d director;
+    const Eigen::Vector3d pos;
 
-    double k;
+    
+    const Eigen::Vector3d director;
 
+    
+    const double k;
+
+    
     double phi;
 
+    
     const double wavelength = 0.00865;
 
+    
     const double piston_radius = 0.0045;
 
+    
     const double p0 = 0.364;        
+
     
     Transducer(const Eigen::Vector3d pos, const Eigen::Vector3d dir, const double phi=0);
 
+    
     Transducer(const std::array<double, 3> pos, const std::array<double, 3> dir, const double phi=0);
 
+    
     std::complex<double> pressure(const Eigen::Vector3d point, const double shift=0) const;
+
     
     Eigen::Vector3cd nablap(const Eigen::Vector3d point, const double shift=0) const;
-
 
 
     // // stator

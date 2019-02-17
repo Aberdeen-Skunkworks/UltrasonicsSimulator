@@ -54,27 +54,27 @@ T& Field<T>::operator() (const std::array<size_t, 3> c) {
 
 
 template<class T>
-std::array<size_t, 3> Field<T>::N() const {
+const std::array<size_t, 3> Field<T>::N() const {
     return _N;
 }
 
 
 
 template<class T>
-size_t Field<T>::N(const size_t i) const {
+const size_t Field<T>::N(const size_t i) const {
     return _N[i];
 }
 
 
 
 template<class T>
-std::array<double, 3> Field<T>::L() const {
+const std::array<double, 3> Field<T>::L() const {
     return _L;
 }
 
 
 
 template<class T>
-double Field<T>::L(const size_t i) const {
+const double Field<T>::L(const size_t i) const {
     return _L[i];
 }
