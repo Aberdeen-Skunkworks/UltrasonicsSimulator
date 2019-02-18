@@ -22,7 +22,7 @@ public:
     const Eigen::Vector3d director;
 
     
-    const double k;
+    double k;
 
     
     double phi;

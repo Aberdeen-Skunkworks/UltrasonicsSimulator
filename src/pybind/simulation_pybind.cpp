@@ -47,6 +47,11 @@
 	     py::arg("point"))
 	.def("transducer", [](Simulation& sim, const size_t index) {
 		return sim.transducers[index];
-	    });
+	    })
+	.def_readonly("gravity", &Simulation::gravity)
+    	.def_readonly("frequency", &Simulation::frequency)
+    	.def_readonly("air_density", &Simulation::air_density)
+    	.def_readonly("c_air", &Simulation::sound_speed_air)
+	.def_readonly("c_particle", &Simulation::sound_speed_particle);
     
 }

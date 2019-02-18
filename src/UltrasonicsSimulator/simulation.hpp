@@ -13,6 +13,13 @@
 
 class Simulation {
     
+    size_t optimisation_counter = 0;
+
+    
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
     const Eigen::Vector3d gravity;
 
     
@@ -26,13 +33,6 @@ class Simulation {
 
     
     const double air_density = 1.2; // kg/m^3
-
-    
-    size_t optimisation_counter = 0;
-
-    
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     
     Simulation();

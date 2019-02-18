@@ -3,7 +3,7 @@
 
 
 Transducer::Transducer(const Eigen::Vector3d pos, const Eigen::Vector3d dir, const double phi /* =0 */):
-    pos(pos), director(dir / dir.norm()), phi(phi), k(2 * M_PI / wavelength)
+    pos(pos), director(dir / dir.norm()), phi(phi)//, k(2.0 * M_PI / wavelength)
 {
     
     double l = director.norm();
@@ -12,6 +12,8 @@ Transducer::Transducer(const Eigen::Vector3d pos, const Eigen::Vector3d dir, con
 	throw "Cannot use a zero director";
     }
 
+    k = 2.0 * M_PI / wavelength;
+    
 }
 
 
@@ -23,7 +25,9 @@ Transducer::Transducer(const std::array<double, 3> pos, const std::array<double,
 
 
 double Transducer::PktoPkA(const double d) const {
+    
     return d * 18;
+    
 }
 
 

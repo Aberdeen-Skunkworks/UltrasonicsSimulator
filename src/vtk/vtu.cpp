@@ -67,12 +67,12 @@ std::string vtu::point_data(const std::vector<Transducer>& transducers) {
     std::stringstream vtu_str;
     vtu_str << "      <PointData>\n";
     vtu_str << "        <DataArray type=\"Float64\" NumberOfComponents=\"1\" Name=\"Phase\" format=\"ascii\">\n          ";
-    for (Transducer t : transducers) {
+    for (const Transducer& t : transducers) {
 	vtu_str << t.phi << " ";
     }
     vtu_str << "\n        </DataArray>\n";
     vtu_str << "        <DataArray type=\"Float64\" NumberOfComponents=\"3\" Name=\"Director\" format=\"ascii\">\n          ";
-    for (Transducer t : transducers) {
+    for (const Transducer& t : transducers) {
 	for (size_t r = 0; r < 3; r++){
 	    vtu_str << t.director[r] << " ";
 	}
@@ -97,7 +97,7 @@ std::string vtu::points(const std::vector<Transducer>& transducers) {
     std::stringstream vtu_str;
     vtu_str << "      <Points>\n";
     vtu_str << "        <DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"ascii\">\n";
-    for (Transducer t : transducers) {
+    for (const Transducer& t : transducers) {
 	for (size_t r = 0; r < 3; r++){
 	    vtu_str << t.pos[r] << " ";
 	}
