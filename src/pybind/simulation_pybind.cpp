@@ -45,7 +45,8 @@
 	     py::arg("dy"),
 	     py::arg("dz"),
 	     py::arg("max_optimisation_time") = 1,
-	     py::arg("xtol") = 1e-4)
+	     py::arg("xtol") = 1e-4,
+	     py::arg("algorithm") = "GN_ESCH")
 	.def("focus",
 	     py::overload_cast<const std::array<double, 3> >(&Simulation::focus),
 	     "focusses the transducers on a point in space",

@@ -203,9 +203,22 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 					   const bool dy,
 					   const bool dz,
 					   const double max_optimisation_time,
-					   const double xtol) {
+					   const double xtol,
+					   const std::string algo) {
     
-    nlopt::opt opt(nlopt::GN_ESCH, transducers.size());
+    optimisation_counter = 0;
+    
+    nlopt::algorithm algo_enum;
+    if (algo == "LN_BOBYQA") {
+	std::cout << "Using LN_BOBYQA (Local Optimisation)" << "\n";
+	algo_enum = nlopt::LN_BOBYQA;	
+    }
+    else {
+	std::cout << "Using GN_ESCH (Genetic Algorithm)" << "\n";
+	algo_enum = nlopt::GN_ESCH;
+    }
+    
+    nlopt::opt opt(algo_enum, transducers.size());
 
     const std::vector<double> lb(transducers.size(), 0);
     const std::vector<double> ub(transducers.size(), 2*M_PI);
