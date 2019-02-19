@@ -388,12 +388,9 @@ double LBFGS_laplacian_optimiser::operator()(const Eigen::VectorXd& x, Eigen::Ve
 	sim->transducers[i].phi += incr;
 	const double lap_hi = - sim->laplacian_sum(opt_points, width, mass, diameter, dx, dy, dz);
 
-	sim->transducers[i].phi -= 2*incr;
-	const double lap_lo = - sim->laplacian_sum(opt_points, width, mass, diameter, dx, dy, dz);
-	
-	sim->transducers[i].phi += incr;
+	sim->transducers[i].phi -= incr;
 
-	grad[i] = (lap_hi - lap_lo) / (2 * incr);
+	grad[i] = (lap_hi - lap) / incr;
 	
     }
     
