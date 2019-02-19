@@ -7,9 +7,14 @@ set (CMAKE_CXX_STANDARD 14)
 set( CMAKE_FLAGS_RELEASE -O3 -Wall )
 
 file( GLOB_RECURSE src "src/*.cpp" )
+file( GLOB_RECURSE remove_pybinders "src/pybind/*.cpp" )
+list( REMOVE_ITEM src ${remove_pybinders} )
+list( APPEND ${src} "src/pybind/pybinder.cpp" )
 
 include_directories (eigen/)
-include_directories (~/stator/)
+include_directories (LBFGSpp/include/)
+#include_directories (~/stator/)
+
 
 # # for a c executable
 # add_executable (main main.cpp ${src})

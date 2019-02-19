@@ -3,6 +3,7 @@
 #include <complex>
 
 #include "nlopt.hpp"
+#include "LBFGS.h"
 
 #include "transducer.hpp"
 #include "particle.hpp"
@@ -12,9 +13,6 @@
 
 
 class Simulation {
-    
-    size_t optimisation_counter = 0;
-
     
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -33,6 +31,9 @@ public:
 
     
     const double air_density = 1.2; // kg/m^3
+
+
+    size_t optimisation_counter = 0;
 
     
     Simulation();
@@ -81,3 +82,24 @@ public:
 
 
 double optimise_laplacian_function_wrapper(const std::vector<double>& x, std::vector<double>& grad, void* wrapper_func_data);
+
+
+
+class LBFGS_laplacian_optimiser {
+
+    Simulation* sim;
+    const std::vector<std::array<double, 3> > opt_points;
+    const double width;
+    const double mass;
+    const double diameter;
+    const bool dx;
+    const bool dy;
+    const bool dz;
+    
+public:
+
+    LBFGS_laplacian_optimiser(Simulation*, const std::vector<std::array<double, 3> >, const double, const double, const double, const bool, const bool, const bool);
+    
+    double operator()(const Eigen::VectorXd&, Eigen::VectorXd&);
+    
+};

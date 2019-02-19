@@ -13,10 +13,11 @@ L = [0.1, 0.1, 0.1]
 origin = [-0.05, 0.005, -0.05]
 
 # defining the number of transducers in the x and z directions
-tx, tz = 20, 20
+tx, tz = 10, 10
 
 # creating a ultrasonics simulation
 try:
+    hello
     pickle_obj = pickle.load(open("opt_sim_x.pkl", "rb"))
     sim = pickle_obj
     print(sim)
@@ -44,14 +45,14 @@ pd = 0.0042
 
 # optimising the transducer phases for the laplacian in the x
 # direction at a point in space
-# opt_point = [origin[0] + L[0] / 2, origin[1] + L[1] / 2, origin[2] + L[2] / 2]
-opt_point = [origin[0] + L[0] / 2, 0.12, origin[2] + L[2] / 2]
+opt_point = [origin[0] + L[0] / 2, origin[1] + L[1] / 2, origin[2] + L[2] / 2]
 print("optimisation point:", opt_point)
 
 # optimising
 print("Optimising transducer phases")
-sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 200, 1e-0)
+sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 60, 1e-0)
 sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 1e-0, "LN_BOBYQA")
+#sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 1e-0, "LBFGS")
 
 # print("phi:", sim.transducer(0).phi)
 us.dump(sim, "optimised_phi_x_laplacian.vtu")

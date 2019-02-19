@@ -1,7 +1,7 @@
 
 
 
-{
+
     
     // Simulation class
     py::class_<Simulation>(m, "Simulation")
@@ -91,4 +91,3 @@
 			}
 			));
     
-}

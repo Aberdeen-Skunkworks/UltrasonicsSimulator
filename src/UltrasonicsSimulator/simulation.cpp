@@ -163,28 +163,49 @@ double Simulation::laplacian_sum(const std::vector<std::array<double, 3> >& poin
 
     double sum = 0;
 
+    std::array<bool, 3> d({dx, dy, dz});
+
     for (const std::array<double, 3>& p : points) {
 
-	double x = p[0];
-	double y = p[1];
-	double z = p[2];
-	
-	const std::array<double, 3> p1_pos({x-width/2, y, z});
-	Particle p1(p1_pos, particle_mass, particle_diameter);
-	double f1 = Gorkov_potential(p1);
-	
-	const std::array<double, 3> p2_pos({x, y, z});
-	Particle p2(p2_pos, particle_mass, particle_diameter);
-	double f2 = Gorkov_potential(p2);
-	
-	const std::array<double, 3> p3_pos({x+width/2, y, z});
-	Particle p3(p3_pos, particle_mass, particle_diameter);
-	double f3 = Gorkov_potential(p3);
+	for (size_t n = 0; n < d.size(); n++) {
 
-	// std::cout << "1 " << f1 << "\t2 " << f2 << "\t3 " << f3 << "\n";
+	    if (d[n]) {
+		// std::cout << "getting laplacian in " << n << "dir" << "\n";
+	    
+		std::array<double, 3> p_hi = p;
+		p_hi[n] += width/2;
+		std::array<double, 3> p_lo = p;
+		p_lo[n] -= width/2;
+		
+		// double x = p[0];
+		// double y = p[1];
+		// double z = p[2];
 	
-	sum += (f1 - 2*f2 + f3) / std::pow(width, 2);
+		// const std::array<double, 3> p1_pos({x-width/2, y, z});
+		const std::array<double, 3> p1_pos(p_lo);
+		Particle p1(p1_pos, particle_mass, particle_diameter);
+		double f1 = Gorkov_potential(p1);
 	
+		// const std::array<double, 3> p2_pos({x, y, z});
+		const std::array<double, 3> p2_pos(p);
+		Particle p2(p2_pos, particle_mass, particle_diameter);
+		double f2 = Gorkov_potential(p2);
+	
+		// const std::array<double, 3> p3_pos({x+width/2, y, z});
+		const std::array<double, 3> p3_pos(p_hi);
+		Particle p3(p3_pos, particle_mass, particle_diameter);
+		double f3 = Gorkov_potential(p3);
+
+		// std::cout << "1 " << f1 << "\t2 " << f2 << "\t3 " << f3 << "\n";
+	
+		sum += (f1 - 2*f2 + f3) / std::pow(width, 2);
+		// std::cout << n << "\n" << p_lo[0] << " " << p_lo[1] << " " << p_lo[2];
+		// std::cout << "\n" << p[0] << " " << p[1] << " " << p[2];
+		// std::cout << "\n" << p_hi[0] << " " << p_hi[1] << " " << p_hi[2] << "\n";
+		// std::cout << "value: " << f1 << ", " << f2 << ", " << f3 << ", " << (f1 - 2*f2 + f3) / std::pow(width, 2) << "\n";
+		
+	    }
+	}
     }
 
     // std::cout << "sum " << sum << "\n";
@@ -207,57 +228,87 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 					   const std::string algo) {
     
     optimisation_counter = 0;
-    
-    nlopt::algorithm algo_enum;
-    if (algo == "LN_BOBYQA") {
-	std::cout << "Using LN_BOBYQA (Local Optimisation)" << "\n";
-	algo_enum = nlopt::LN_BOBYQA;	
-    }
-    else {
-	std::cout << "Using GN_ESCH (Genetic Algorithm)" << "\n";
-	algo_enum = nlopt::GN_ESCH;
-    }
-    
-    nlopt::opt opt(algo_enum, transducers.size());
 
-    const std::vector<double> lb(transducers.size(), 0);
-    const std::vector<double> ub(transducers.size(), 2*M_PI);
-
-    LaplacianOptimisationData data(optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
-    
-    LaplacianSimCombo tdata = {this, &data};
-
-    opt.set_lower_bounds(lb);
-    opt.set_upper_bounds(ub);
-    opt.set_max_objective(optimise_laplacian_function_wrapper, &tdata);
-
-    opt.set_maxtime(max_optimisation_time);
-
-    opt.set_xtol_rel(xtol);
-    
-    std::vector<double> x;
-    for (Transducer& t : transducers) {
-	x.push_back(t.phi);
-    }
+    if (algo == "LBFGS"){
 	
-    double maxf;
+	LBFGSpp::LBFGSParam<double> param;
+	param.epsilon = 1e-6;
+	param.max_iterations = 100;
 
-    try{
-    	nlopt::result result = opt.optimize(x, maxf);
-    	// std::cout << "found minimum of " << std::setprecision(10) << minf << "\n";
-	std::cout << "found max of " << maxf << "\n";
-	// std::cout << "phases:" << "\n";
-	// for (size_t i = 0; i < x.size(); i++) {
-	//     std::cout << i << " - " << x[i] << "\n";
-	// }
-    }
-    catch(std::exception &e) {
-    	std::cout << "nlopt failed: " << e.what() << std::endl;
-    }
+	LBFGSpp::LBFGSSolver<double> solver(param);
+	LBFGS_laplacian_optimiser fun(this, optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
 
-    // setting phi values to optimised values
-    for (size_t i = 0; i < x.size(); i++) {
-	transducers[i].phi = x[i];
+	// Initial guess
+	Eigen::VectorXd x = Eigen::VectorXd::Zero(transducers.size());
+	for (size_t i = 0; i < transducers.size(); i++) {
+	    x[i] = transducers[i].phi;
+	    //x[i] = 3.14;
+	}
+	// std::cout << "x init\n" << x << "\n";
+	
+	// x will be overwritten to be the best point found
+	double fx;
+	int niter = solver.minimize(fun, x, fx);
+
+	std::cout << niter << " iterations" << std::endl;
+	std::cout << "x = \n" << x.transpose() << std::endl;
+	std::cout << "f(x) = " << -fx << std::endl;
+	
+    }
+    
+    if (algo == "LN_BOBYQA" or algo == "GN_ESCH"){
+    
+	nlopt::algorithm nlopt_enum;
+	if (algo == "LN_BOBYQA") {
+	    std::cout << "Using LN_BOBYQA (Local Optimisation)" << "\n";
+	    nlopt_enum = nlopt::LN_BOBYQA;	
+	}
+	else {
+	    std::cout << "Using GN_ESCH (Genetic Algorithm)" << "\n";
+	    nlopt_enum = nlopt::GN_ESCH;
+	}
+    
+	nlopt::opt opt(nlopt_enum, transducers.size());
+
+	const std::vector<double> lb(transducers.size(), 0);
+	const std::vector<double> ub(transducers.size(), 2*M_PI);
+
+	LaplacianOptimisationData data(optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
+    
+	LaplacianSimCombo tdata = {this, &data};
+
+	opt.set_lower_bounds(lb);
+	opt.set_upper_bounds(ub);
+	opt.set_max_objective(optimise_laplacian_function_wrapper, &tdata);
+
+	opt.set_maxtime(max_optimisation_time);
+
+	opt.set_xtol_rel(xtol);
+    
+	std::vector<double> x;
+	for (const Transducer& t : transducers) {
+	    x.push_back(t.phi);
+	}
+	
+	double maxf;
+
+	try{
+	    nlopt::result result = opt.optimize(x, maxf);
+	    // std::cout << "found minimum of " << std::setprecision(10) << minf << "\n";
+	    std::cout << "found max of " << maxf << "\n";
+	    // std::cout << "phases:" << "\n";
+	    // for (size_t i = 0; i < x.size(); i++) {
+	    //     std::cout << i << " - " << x[i] << "\n";
+	    // }
+	}
+	catch(std::exception &e) {
+	    std::cout << "nlopt failed: " << e.what() << std::endl;
+	}
+
+	// setting phi values to optimised values
+	for (size_t i = 0; i < x.size(); i++) {
+	    transducers[i].phi = x[i];
+	}
     }
     
 }
@@ -299,4 +350,60 @@ double optimise_laplacian_function_wrapper(const std::vector<double>& x, std::ve
     
     return sim->optimise_laplacian_function(x, grad, c->data);
     
+}
+
+
+
+LBFGS_laplacian_optimiser::LBFGS_laplacian_optimiser(Simulation* sim, const std::vector<std::array<double, 3> > opt_points, const double width, const double mass, const double diameter, const bool dx, const bool dy, const bool dz):
+    sim(sim),
+    opt_points(opt_points),
+    width(width),
+    mass(mass),
+    diameter(diameter),
+    dx(dx),
+    dy(dy),
+    dz(dz)
+{}
+    
+
+
+double LBFGS_laplacian_optimiser::operator()(const Eigen::VectorXd& x, Eigen::VectorXd& grad) {
+
+    // std::cout << "x's\n";
+    for (size_t i = 0; i < x.size(); i++) {
+	// std::cout << x[i] << ", ";
+	sim->transducers[i].phi = x[i];
+    }
+    // std::cout << "\n";
+
+    // This optimiser can only minimise, so all of the laplacian sums
+    // have a minus before them as we want to maximise this
+    
+    const double lap = - sim->laplacian_sum(opt_points, width, mass, diameter, dx, dy, dz);
+
+    for (size_t i = 0; i < x.size(); i++) {
+
+	const double incr = 2e-6;
+	
+	sim->transducers[i].phi += incr;
+	const double lap_hi = - sim->laplacian_sum(opt_points, width, mass, diameter, dx, dy, dz);
+
+	sim->transducers[i].phi -= 2*incr;
+	const double lap_lo = - sim->laplacian_sum(opt_points, width, mass, diameter, dx, dy, dz);
+	
+	sim->transducers[i].phi += incr;
+
+	grad[i] = (lap_hi - lap_lo) / (2 * incr);
+	
+    }
+    
+    if (sim->optimisation_counter % 100 == 0) {
+	std::cout << sim->optimisation_counter << ", " << lap << "\n";
+    }
+    sim->optimisation_counter++;
+
+    std::cout << "lap: " << -lap << "\n";
+    
+    return lap;
+
 }
