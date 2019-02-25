@@ -5,7 +5,7 @@ main:
 	$(MAKE) -C build/
 
 clean:
-	if [ -d "~/build" ]; then \
+	if [ -d "build/" ]; then \
 		rm -r build; \
 	fi
 	mkdir build
