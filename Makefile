@@ -5,7 +5,9 @@ main:
 	$(MAKE) -C build/
 
 clean:
-	rm -r build
+	if [ -d "~/build" ]; then \
+		rm -r build; \
+	fi
 	mkdir build
 	cd build; \
 	cmake ..
@@ -13,7 +15,6 @@ clean:
 
 simple_commit:
 	git commit -a -m"more work"
-
 
 simple_push:
 	make simple_commit

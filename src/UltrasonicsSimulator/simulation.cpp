@@ -224,12 +224,14 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 					   const bool dy,
 					   const bool dz,
 					   const double max_optimisation_time,
+					   const size_t max_iterations,
 					   const double xtol,
 					   const std::string algo) {
     
     optimisation_counter = 0;
 
     if (algo == "LBFGS"){
+	std::cout << "Using LBFGS algorithm" << "\n";
 	
 	LBFGSpp::LBFGSParam<double> param;
 	param.epsilon = 1e-6;
