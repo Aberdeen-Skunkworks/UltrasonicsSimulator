@@ -235,7 +235,7 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 	
 	LBFGSpp::LBFGSParam<double> param;
 	param.epsilon = 1e-6;
-	param.max_iterations = 100;
+	param.max_iterations = max_iterations;
 
 	LBFGSpp::LBFGSSolver<double> solver(param);
 	LBFGS_laplacian_optimiser fun(this, optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
