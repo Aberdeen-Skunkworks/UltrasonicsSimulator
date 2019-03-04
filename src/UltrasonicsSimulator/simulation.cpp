@@ -257,7 +257,7 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 	std::cout << "f(x) = " << -fx << std::endl;
     }
 
-    if (algo == "IPOPT"){
+    else if (algo == "IPOPT"){
 	
 	// Create a new instance of your nlp (use a SmartPtr, not raw)
 	Ipopt::SmartPtr<Ipopt::TNLP> mynlp = new Ipopt::LaplacianOptimiser(this, optimisation_points, laplacian_width, particle_mass, particle_diameter, dx, dy, dz);
@@ -301,7 +301,7 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 	
     }
 
-    if (algo == "LN_BOBYQA" or algo == "GN_ESCH"){
+    else if (algo == "LN_BOBYQA" or algo == "GN_ESCH"){
 
 	nlopt::algorithm nlopt_enum;
 	if (algo == "LN_BOBYQA") {
@@ -354,6 +354,10 @@ void Simulation::optimise_Gorkov_laplacian(const std::vector<std::array<double, 
 	for (size_t i = 0; i < x.size(); i++) {
 	    transducers[i].phi = x[i];
 	}
+    }
+
+    else {
+	std::cout << "Error: Unrecognised algorithm: " << algo << "\n";
     }
 
 }
