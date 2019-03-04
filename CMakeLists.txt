@@ -13,6 +13,8 @@ list( APPEND ${src} "src/pybind/pybinder.cpp" )
 
 include_directories (eigen/)
 include_directories (LBFGSpp/include/)
+include_directories (Ipopt/include/coin/)
+link_directories (Ipopt/lib/)
 #include_directories (~/stator/)
 
 
@@ -23,3 +25,4 @@ include_directories (LBFGSpp/include/)
 add_subdirectory(pybind11)
 pybind11_add_module(ultrasonics src/pybind/pybinder.cpp ${src})
 target_link_libraries(ultrasonics PRIVATE "/usr/local/lib/libnlopt.so")
+target_link_libraries(ultrasonics PRIVATE "libipopt.so")

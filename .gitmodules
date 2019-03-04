@@ -7,3 +7,6 @@
 [submodule "LBFGSpp"]
 	path = LBFGSpp
 	url = https://github.com/yixuan/LBFGSpp/
+[submodule "Ipopt"]
+	path = Ipopt
+	url = https://github.com/coin-or/Ipopt.git
