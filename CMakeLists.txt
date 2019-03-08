@@ -4,7 +4,7 @@ project (UltrasonicLevitator)
 
 set (CMAKE_CXX_STANDARD 14)
 
-set( CMAKE_FLAGS_RELEASE -O3 -Wall )
+set( CMAKE_CXX_FLAGS "-O3 -Wall -DHAVE_CSTDDEF" )
 
 file( GLOB_RECURSE src "src/*.cpp" )
 file( GLOB_RECURSE remove_pybinders "src/pybind/*.cpp" )
@@ -13,9 +13,11 @@ list( APPEND ${src} "src/pybind/pybinder.cpp" )
 
 include_directories (eigen/)
 include_directories (LBFGSpp/include/)
-include_directories (Ipopt/include/coin/)
+include_directories (Ipopt/include/)
 link_directories (Ipopt/lib/)
-#include_directories (~/stator/)
+link_directories (/usr/lib/)
+link_directories (/usr/local/lib/)
+# include_directories (~/stator/)
 
 
 # # for a c executable
@@ -24,5 +26,5 @@ link_directories (Ipopt/lib/)
 
 add_subdirectory(pybind11)
 pybind11_add_module(ultrasonics src/pybind/pybinder.cpp ${src})
-target_link_libraries(ultrasonics PRIVATE "/usr/local/lib/libnlopt.so")
+target_link_libraries(ultrasonics PRIVATE "libnlopt.so")
 target_link_libraries(ultrasonics PRIVATE "libipopt.so")

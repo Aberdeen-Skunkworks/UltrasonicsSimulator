@@ -10,8 +10,8 @@
 #include "field.hpp"
 #include "optimisation_data.hpp"
 
-#include "IpTNLP.hpp"
-#include "IpIpoptApplication.hpp"
+#include "coin/IpTNLP.hpp"
+#include "coin/IpIpoptApplication.hpp"
 
 
 class Simulation {

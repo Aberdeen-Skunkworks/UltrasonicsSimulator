@@ -17,7 +17,7 @@ tx, tz = 10, 10
 
 # creating a ultrasonics simulation
 try:
-    hello
+    #this will fail
     pickle_obj = pickle.load(open("opt_sim_x.pkl", "rb"))
     sim = pickle_obj
     print(sim)
@@ -53,7 +53,7 @@ print("Optimising transducer phases")
 #sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 60, 100, 1e-0)
 #sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 100, 1e-0, "LN_BOBYQA")
 # sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 100, 1e-0, "LBFGS")
-sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 100, 3e-5, "IPOPT")
+sim.optimise_Gorkov_laplacian([opt_point], 2e-6, pm, pd, True, False, False, 100, 2000, 3e-5, "IPOPT")
 
 # print("phi:", sim.transducer(0).phi)
 us.dump(sim, "optimised_phi_x_laplacian.vtu")
